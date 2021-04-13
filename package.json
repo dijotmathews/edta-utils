@@ -1,0 +1,26 @@
+{
+  "name": "edta-utils",
+  "version": "1.0.0",
+  "description": "misc util scripts for edta.",
+  "main": "player_details.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dijotmathews/edta-utils.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dijotmathews/edta-utils/issues"
+  },
+  "homepage": "https://github.com/dijotmathews/edta-utils#readme",
+  "dependencies": {
+    "csv-parse": "^4.15.3",
+    "node-csv": "^0.1.2",
+    "xls": "^0.5.1",
+    "xlsx": "^0.16.9",
+    "yargs": "^16.2.0"
+  }
+}

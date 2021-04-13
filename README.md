@@ -1,2 +1,2 @@
 # edta-utils
-misc util scripts for edta
+misc util scripts for edta. 
