@@ -1,24 +1,29 @@
-const yargs = require('yargs');
-
-const argv = yargs
-// .command('leage_generator', 'Generate league schedule for number of players and weeks specified', {
-// 	player_count: {
-// 		description: 'the cound of players registered',
-// 		alias: 'p',
-// 		type: 'number'
-// 	}, 
-// 	weeks: {
-// 		description: 'number of weeks available to schedule',
-// 		alias: 'w', 
-// 		type: 'number'
-// 	}
-// })
-.option('player_count', {
-	alias: 'p', 
-	description: 'number of players', 
-	type: 'number',
-})
+const argv = require('yargs/yargs')(process.argv.slice(2))
+.options(
+	{	'player_count': {
+			alias: 'p', 
+			description: 'number of players', 
+			type: 'number',
+		},
+	
+		'prefix': {
+			alias: 'x',
+			description: 'for generating the game code',
+			type: 'string',
+		}
+	}
+)
 .argv;
+
+
+// if(typeof require !== 'undefined') XLSX = require('xlsx');
+
+// let ws_name = "Draw";
+// var wb = XLSX.utils.book_new();
+
+let ws_data = [["SortCode", "Player_1", "Player_2", "Player_1_Score", "Player_2_Score", "Winner", "Game_Code"]];
+// console.log('SortCode',',','Player_1',',','Player_2 ',',', 'Player_1_Score',',', 'Player_2_Score',',','Winner',',','Game_Code');
+console.log(ws_data.join(','));
 
 if( ( argv.p || argv.player_count ) && ( argv.w || argv.weeks)) {
 	//console.log('Generating league table for '+ argv.p +' players , over '+ argv.w + ' weeks!');
@@ -58,14 +63,24 @@ if( ( argv.p || argv.player_count ) && ( argv.w || argv.weeks)) {
 
 			let p1 = parseInt(i+1);
 			let p2 = parseInt(j+1);
+			let player1 = '=$Sheet2.A'+p1;
+			let player2 = '=$Sheet2.A'+p2;
 			//console.log('Player '+ p1+' Vs '+ 'Player '+ p2);
-//=$Sheet2.A1
-			console.log(Math.random(),',','=$Sheet2.A'+p1+',','=$Sheet2.A'+p2);
+
+			// ws_data.push([Math.random(),player1,player2,'','','',argv.x+game_count]);
+			console.log(Math.random(),',','=$Sheet2.A'+p1+',','=$Sheet2.A'+p2,',' ,'',',','',',','',','+argv.x+game_count);
 		}
 
 	}
 
-	//console.log(JSON.stringify(table));
+	// var ws = XLSX.utils.aoa_to_sheet(ws_data);
+	// XLSX.utils.sheet_to_csv(ws);
+
+	// /* Add the worksheet to the workbook */
+	// XLSX.utils.book_append_sheet(wb, ws, ws_name);
+	// // console.log(ws_data);
+	// XLSX.writeFile(wb, 'out.csv');
+	// //console.log(JSON.stringify(table));
 
 }
 

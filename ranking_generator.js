@@ -16,8 +16,7 @@ const argv = yargs
 	.demandOption(['f'])
 	.help().argv;
 
-// var fs = require('fs');
-// var s = fs.createReadStream(argv.file);
+
 
 if(typeof require !== 'undefined') XLSX = require('xlsx');
 var workbook = XLSX.readFile(argv.file);
@@ -35,16 +34,25 @@ matches.forEach(match => {
 	if(match['Winner'] && match['Winner'] != undefined ){
 		if(match['Player_1'] && !players_found[match['Player_1']]){
 			players_found[match['Player_1']] = 1;
-			players_score[match['Player_1']] = 0;
+			players_score[match['Player_1']] = 50;
 		}
 
 		if(match['Player_2'] && !players_found[match['Player_2']]){
 			players_found[match['Player_2']] = 1;
-			players_score[match['Player_2']] = 0;
+			players_score[match['Player_2']] = 50;
 		}
 
-		if(match['Player_1'] === match['Winner'] || match['Player_2'] === match['Winner']){
-			players_score[match['Winner']] += 3;
+		let score = [];
+		if(match['Player_1'] === match['Winner']) {
+			score = calculate_ranking(players_score[match['Player_1']], players_score[match['Player_2']],
+				match['Player_1_Score'], match['Player_2_Score']);
+			players_score[match['Player_1']] = score[0];
+			players_score[match['Player_2']] = score[1];
+		} else if (match['Player_2'] === match['Winner']){ 
+			score = calculate_ranking(players_score[match['Player_2']], players_score[match['Player_1']],
+				match['Player_2_Score'], match['Player_1_Score']);
+			players_score[match['Player_2']] = score[0];
+			players_score[match['Player_1']] = score[1];
 		}
 		
 		
@@ -53,12 +61,59 @@ matches.forEach(match => {
 
 const sortable = Object.entries(players_score)
     .sort(([,a],[,b]) => b-a)
-    .reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
+	.reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
 
+// console.log(sortable);
+// return ;
+
+var fs = require('fs');
+
+let html = `<html><head>
+<style>
+table, td, th {
+  border: 1px solid black;
+}
+
+table {
+  width: 50%;
+  border-collapse: collapse;
+}
+</style>
+</head><body>`;
+
+html += `<table>
+		<tr><th> Rank </th> <th> Player </th><th> Points </th></tr>`;
+let rank = 1;
 Object.keys(sortable).forEach((player) => {
-	console.log('<li>'+ player +' => '+ sortable[player] +'</li>');
+	html += `<tr> <td> ${rank} </td> <td> ${player} </td> <td> ${sortable[player].toFixed(2)} </td> </tr>`;
+	++rank;
 });
 
+html += "</table>";
+
+html += "</body></html>";
+
+fs.writeFile(argv.file+'.html', html, (error) => { 
+	
+	/* handle error */ 
+});
+
+function calculate_ranking(winners_current_ranking, loosers_current_ranking, winners_scores, loosers_scores){
+	
+
+	let winner_total_games = winners_scores.toString().split(',').reduce((a,b) => a+b);
+	let looser_total_games = loosers_scores.toString().split(',').reduce((a,b) => a+b);
+
+	let delta_s = winner_total_games - looser_total_games;
+
+	let new_winner_ranking = winners_current_ranking + 
+			(delta_s * 2 * loosers_current_ranking) / (winners_current_ranking + loosers_current_ranking) ;
+	let new_looser_ranking = loosers_current_ranking - 
+			(delta_s * 2 * winners_current_ranking) / (winners_current_ranking + loosers_current_ranking) ;
 
 
+	return [new_winner_ranking,new_looser_ranking];
+
+}
+// console.log(html);
 
